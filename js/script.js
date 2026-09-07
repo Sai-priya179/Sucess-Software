@@ -137,11 +137,11 @@ class ParticleEngine {
         this.resize();
         window.addEventListener('resize', () => this.resize());
         
-        this.stars = Array(200).fill().map(() => ({
+        this.stars = Array(90).fill().map(() => ({
             x: Math.random()*this.w, y: Math.random()*this.h, s: Math.random()*2
         }));
         
-        this.nodes = Array(120).fill().map(() => ({
+        this.nodes = Array(55).fill().map(() => ({
             x: Math.random()*this.w, y: Math.random()*this.h,
             vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5,
             phase: Math.random()*Math.PI*2
@@ -151,6 +151,13 @@ class ParticleEngine {
             this.mouse.x = e.clientX; this.mouse.y = e.clientY;
         });
         this.time = 0;
+        this.active = true;
+        this.running = false;
+        this.visibilityObserver = new IntersectionObserver(([entry]) => {
+            this.active = entry.isIntersecting;
+            if (this.active) this.animate();
+        }, { threshold: 0.01 });
+        this.visibilityObserver.observe(document.getElementById('home'));
         this.animate();
     }
     resize() {
@@ -160,7 +167,7 @@ class ParticleEngine {
     drawBg() {
         this.ctxBg.clearRect(0, 0, this.w, this.h);
         // Stars
-        this.ctxBg.fillStyle = 'rgba(255,255,255,0.8)';
+        this.ctxBg.fillStyle = 'rgba(255,255,255,0.92)';
         this.stars.forEach(s => {
             s.y -= 0.2; if(s.y < 0) s.y = this.h;
             this.ctxBg.fillRect(s.x, s.y, s.s, s.s);
@@ -178,8 +185,8 @@ class ParticleEngine {
     }
     drawFg() {
         this.ctxFg.clearRect(0, 0, this.w, this.h);
-        this.ctxFg.fillStyle = '#f0a500';
-        this.ctxFg.strokeStyle = 'rgba(240,165,0,0.15)';
+        this.ctxFg.fillStyle = '#ffffff';
+        this.ctxFg.strokeStyle = 'rgba(255,255,255,0.2)';
         
         this.nodes.forEach(n => {
             n.x += n.vx; n.y += n.vy; n.phase += 0.02;
@@ -209,9 +216,18 @@ class ParticleEngine {
         this.ctxFg.globalAlpha = 1;
     }
     animate() {
-        this.time++;
-        this.drawBg(); this.drawFg();
-        requestAnimationFrame(() => this.animate());
+        if (this.running) return;
+        this.running = true;
+        const frame = () => {
+            if (!this.active) {
+                this.running = false;
+                return;
+            }
+            this.time++;
+            this.drawBg(); this.drawFg();
+            requestAnimationFrame(frame);
+        };
+        frame();
     }
 }
 
@@ -478,20 +494,152 @@ const initCourseSelector = () => {
     });
 };
 
+const initCourseDiscovery = () => {
+    const cards = [...document.querySelectorAll('.course-card')];
+    const search = document.getElementById('courseSearch');
+    const count = document.getElementById('courseCount');
+    const filters = document.querySelectorAll('.course-filter');
+    if (!cards.length || !search || !count) return;
+    let category = 'all';
+
+    const render = () => {
+        const query = search.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach(card => {
+            const matchesCategory = category === 'all' || card.dataset.category === category;
+            const matchesQuery = !query || card.innerText.toLowerCase().includes(query);
+            const shouldShow = matchesCategory && matchesQuery;
+            card.classList.toggle('is-hidden', !shouldShow);
+            if (shouldShow) visible += 1;
+        });
+        count.textContent = `${visible} course${visible === 1 ? '' : 's'}`;
+    };
+    search.addEventListener('input', render);
+    filters.forEach(filter => filter.addEventListener('click', () => {
+        category = filter.dataset.filter;
+        filters.forEach(item => item.classList.toggle('active', item === filter));
+        render();
+    }));
+    render();
+};
+
+const initScrollProgress = () => {
+    const progress = document.getElementById('scrollProgress');
+    if (!progress) return;
+    const update = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = `${max > 0 ? (window.scrollY / max) * 100 : 0}%`;
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+};
+
+const initGalleryLightbox = () => {
+    const items = document.querySelectorAll('.gallery-item');
+    if (!items.length) return;
+    const close = () => document.querySelector('.gallery-modal')?.remove();
+    items.forEach(item => item.addEventListener('click', () => {
+        const art = item.querySelector('.gallery-art');
+        const caption = item.querySelector('figcaption')?.innerHTML || '';
+        const modal = document.createElement('div');
+        modal.className = 'gallery-modal';
+        modal.innerHTML = `<div class="gallery-modal-inner" role="dialog" aria-modal="true" aria-label="Gallery preview"><button type="button" class="gallery-modal-close" aria-label="Close gallery preview">×</button><div class="gallery-modal-art ${art.className.replace('gallery-art', '')}"></div><div class="gallery-modal-caption">${caption}</div></div>`;
+        modal.addEventListener('click', event => { if (event.target === modal || event.target.closest('.gallery-modal-close')) close(); });
+        document.body.appendChild(modal);
+    }));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+};
+
+// Locked, smooth scroll control for the original video timeline.
+const initHeroVideoScroll = () => {
+    const hero = document.getElementById('home');
+    const video = document.getElementById('heroVideo');
+    if (!hero || !video) return;
+
+    let locked = false;
+    let firstPassComplete = false;
+    let lastTouchY = 0;
+    const unlock = () => {
+        locked = false;
+        document.documentElement.classList.remove('hero-locked');
+    };
+    const startFirstPass = event => {
+        if (locked || firstPassComplete || window.scrollY > 4) return;
+        event?.preventDefault();
+        locked = true;
+        document.documentElement.classList.add('hero-locked');
+        window.scrollTo(0, 0);
+        video.currentTime = 0;
+        // video.loop = false;
+        video.play().catch(unlock);
+    };
+    const onWheel = event => {
+        if (locked) {
+            event.preventDefault();
+            return;
+        }
+        const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
+        if (delta > 0) startFirstPass(event);
+    };
+    const onTouchStart = event => { lastTouchY = event.touches[0].clientY; };
+    const onTouchMove = event => {
+        const currentTouchY = event.touches[0].clientY;
+        if (lastTouchY - currentTouchY > 0 || locked) startFirstPass(event);
+        lastTouchY = currentTouchY;
+    };
+    video.pause();
+    // video.loop = false;
+    video.addEventListener('ended', () => {
+        if (!locked) return;
+        firstPassComplete = true;
+        video.loop = true;
+        unlock();
+        document.getElementById('about')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    video.addEventListener('loadedmetadata', () => { video.currentTime = 0; }, { once: true });
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+};
+
+const initFloatingDots = () => {
+    const container = document.getElementById('floatingDots');
+    if (!container) return;
+    const fragment = document.createDocumentFragment();
+    for (let index = 0; index < 24; index += 1) {
+        const dot = document.createElement('span');
+        dot.style.setProperty('--x', `${Math.random() * 100}%`);
+        dot.style.setProperty('--y', `${Math.random() * 100}%`);
+        dot.style.setProperty('--size', `${1 + Math.random() * 3}px`);
+        dot.style.setProperty('--delay', `${Math.random() * -8}s`);
+        dot.style.setProperty('--duration', `${6 + Math.random() * 8}s`);
+        fragment.appendChild(dot);
+    }
+    container.appendChild(fragment);
+};
+
 // 9. MOBILE MENU
 const initMobileMenu = () => {
     const burger = document.getElementById('burger');
     const links = document.getElementById('navLinks');
     if (!burger || !links) return;
     burger.addEventListener('click', () => {
-        burger.classList.toggle('open');
-        links.classList.toggle('open');
+        const isOpen = burger.classList.toggle('open');
+        links.classList.toggle('open', isOpen);
+        burger.setAttribute('aria-expanded', String(isOpen));
+        burger.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
     });
     links.querySelectorAll('a').forEach(l => {
         l.addEventListener('click', () => {
             burger.classList.remove('open');
             links.classList.remove('open');
+            burger.setAttribute('aria-expanded', 'false');
+            burger.setAttribute('aria-label', 'Open navigation');
         });
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && links.classList.contains('open')) burger.click();
     });
 };
 
@@ -502,7 +650,14 @@ const initFormSubmission = () => {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
+            const status = document.getElementById('formStatus');
             const originalText = submitBtn.innerHTML;
+            if (!/^\+?[0-9\s-]{10,15}$/.test(document.getElementById('cPhone').value.trim())) {
+                if (status) status.textContent = 'Please enter a valid phone number.';
+                document.getElementById('cPhone').focus();
+                return;
+            }
+            if (status) status.textContent = 'Sending your enquiry...';
             submitBtn.innerHTML = 'Sending...';
             submitBtn.classList.add('loading');
             
@@ -524,6 +679,7 @@ const initFormSubmission = () => {
                 if (response.ok) {
                     submitBtn.innerHTML = '';
                     submitBtn.classList.add('success');
+                    if (status) status.textContent = 'Thanks. We will contact you shortly.';
                     contactForm.reset();
                     document.getElementById('cCourse').classList.remove('has-value');
                     setTimeout(() => {
@@ -531,11 +687,13 @@ const initFormSubmission = () => {
                         submitBtn.classList.remove('success');
                     }, 3000);
                 } else {
+                    if (status) status.textContent = 'We could not send this yet. Please try again.';
                     submitBtn.innerHTML = 'Error! Try Again';
                     setTimeout(() => submitBtn.innerHTML = originalText, 3000);
                 }
             } catch (err) {
                 console.error(err);
+                if (status) status.textContent = 'Connection failed. Please call us directly.';
                 submitBtn.classList.remove('loading');
                 submitBtn.innerHTML = 'Connection Failed';
                 setTimeout(() => submitBtn.innerHTML = originalText, 3000);
@@ -548,11 +706,47 @@ const initFormSubmission = () => {
 window.addEventListener('DOMContentLoaded', () => {
     initPreloader();
     initCursor();
-    new ParticleEngine();
     initScrollObserver();
     initInteractions();
     initReviewsSlider();
     initCourseSelector();
+    initCourseDiscovery();
+    initScrollProgress();
+    initGalleryLightbox();
+    // initHeroVideoScroll();
+    initFloatingDots();
     initMobileMenu();
     initFormSubmission();
 });
+
+
+// Custom Cursor Logic
+const cursor = document.querySelector('.custom-cursor');
+
+
+document.querySelectorAll('a, button, input, .course-card, .video-feature').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); });
+  el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); });
+});
+
+
+// Magnetic Buttons
+document.querySelectorAll('.btn').forEach(btn => {
+  btn.addEventListener('mousemove', function(e) {
+    const rect = this.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    this.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;;
+  });
+  btn.addEventListener('mouseleave', function() {
+    this.style.transform = 'translate(0px, 0px)';
+  });
+});
+
+
+
+
+
+
+
+

@@ -9,7 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+
 </head>
 <body>
 
@@ -29,6 +31,7 @@
 
 <!-- NAV -->
 <nav id="nav">
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
   <a href="#home" class="brand">
     <div class="hex"><span>SSA</span></div>
     <div>
@@ -41,21 +44,27 @@
     <a href="#about">About</a>
     <a href="#courses">Courses</a>
     <a href="#commitment">Commitment</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#videos">Videos</a>
     <a href="#reviews">Reviews</a>
+    <a href="#faq">FAQ</a>
     <a href="#contact">Contact</a>
     <a href="#contact" class="nav-cta">Enroll Now</a>
   </div>
-  <div class="burger" id="burger">
+  <button class="burger" id="burger" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="navLinks">
     <span></span>
     <span></span>
     <span></span>
-  </div>
+  </button>
 </nav>
 
 <!-- HERO -->
 <section class="hero" id="home">
-  <canvas id="hero-bg"></canvas>
-  <canvas id="hero-fg"></canvas>
+  <video class="site-video" id="heroVideo" muted playsinline preload="auto" autoplay loop aria-hidden="true">
+    <source src="208576_medium.mp4" type="video/mp4">
+  </video>
+  <div class="site-video-shade" aria-hidden="true"></div>
+  <div class="floating-dots" id="floatingDots" aria-hidden="true"></div>
   <div class="hero-content" id="heroContent">
     <div class="loc-badge" id="hero-badge">Anantapuramu, Andhra Pradesh</div>
     <h1 id="heroTitle">COME, GROW WITH US</h1>
@@ -116,8 +125,18 @@
   <div class="container">
     <div class="section-label reveal">What We Teach</div>
     <h2 class="section-title reveal">Master The <span class="accent">Stack.</span></h2>
+    <div class="course-tools reveal" role="search" aria-label="Find a course">
+      <label class="course-search"><span>⌕</span><input id="courseSearch" type="search" placeholder="Find your next skill" aria-label="Search courses"></label>
+      <div class="course-filters" role="group" aria-label="Course categories">
+        <button class="course-filter active" type="button" data-filter="all">All</button>
+        <button class="course-filter" type="button" data-filter="programming">Programming</button>
+        <button class="course-filter" type="button" data-filter="data">Data</button>
+        <button class="course-filter" type="button" data-filter="career">Career-ready</button>
+      </div>
+      <span class="course-count" id="courseCount">8 courses</span>
+    </div>
     <div class="courses-grid" id="coursesGrid">
-      <div class="course-card reveal" style="transition-delay: 0s;">
+      <div class="course-card reveal" data-category="programming" style="transition-delay: 0s;">
         <div>
           <div class="course-icon">⚙️</div>
           <div class="course-tag">Foundations</div>
@@ -125,7 +144,7 @@
         </div>
         <a href="#contact" class="course-enroll">Enroll Now →</a>
       </div>
-      <div class="course-card reveal" style="transition-delay: 0.08s;">
+      <div class="course-card reveal" data-category="programming" style="transition-delay: 0.08s;">
         <div>
           <div class="course-icon">🔧</div>
           <div class="course-tag">OOP Mastery</div>
@@ -133,7 +152,7 @@
         </div>
         <a href="#contact" class="course-enroll">Enroll Now →</a>
       </div>
-      <div class="course-card reveal" style="transition-delay: 0.16s;">
+      <div class="course-card reveal" data-category="career" style="transition-delay: 0.16s;">
         <div>
           <div class="course-icon">☕</div>
           <div class="course-tag">Enterprise Ready</div>
@@ -141,7 +160,7 @@
         </div>
         <a href="#contact" class="course-enroll">Enroll Now →</a>
       </div>
-      <div class="course-card reveal" style="transition-delay: 0.24s;">
+      <div class="course-card reveal" data-category="programming" style="transition-delay: 0.24s;">
         <div>
           <div class="course-icon">🐍</div>
           <div class="course-tag">AI &amp; Beyond</div>
@@ -149,7 +168,7 @@
         </div>
         <a href="#contact" class="course-enroll">Enroll Now →</a>
       </div>
-      <div class="course-card reveal" style="transition-delay: 0.32s;">
+      <div class="course-card reveal" data-category="data" style="transition-delay: 0.32s;">
         <div>
           <div class="course-icon">📊</div>
           <div class="course-tag">Data Power</div>
@@ -157,7 +176,7 @@
         </div>
         <a href="#contact" class="course-enroll">Enroll Now →</a>
       </div>
-      <div class="course-card reveal" style="transition-delay: 0.4s;">
+      <div class="course-card reveal" data-category="career" style="transition-delay: 0.4s;">
         <div>
           <div class="course-icon">🌐</div>
           <div class="course-tag">Build the Web</div>
@@ -165,7 +184,7 @@
         </div>
         <a href="#contact" class="course-enroll">Enroll Now →</a>
       </div>
-      <div class="course-card reveal" style="transition-delay: 0.48s;">
+      <div class="course-card reveal" data-category="data" style="transition-delay: 0.48s;">
         <div>
           <div class="course-icon">🗄️</div>
           <div class="course-tag">Data Vault</div>
@@ -173,7 +192,7 @@
         </div>
         <a href="#contact" class="course-enroll">Enroll Now →</a>
       </div>
-      <div class="course-card reveal" style="transition-delay: 0.56s;">
+      <div class="course-card reveal" data-category="data" style="transition-delay: 0.56s;">
         <div>
           <div class="course-icon">📈</div>
           <div class="course-tag">Business Intel</div>
@@ -184,6 +203,14 @@
     </div>
   </div>
 </section>
+
+
+
+  <!-- VIDEOS (YouTube Showcase) -->
+  <div id="videos" style="padding: 0; margin: 0; width: 100%;">
+    <div id="youtube-showcase-root"></div>
+    <script type="module" src="/src/mount.tsx"></script>
+  </div>
 
 <!-- COMMITMENT -->
 <section class="commitment" id="commitment">
@@ -307,6 +334,61 @@
   </div>
 </section>
 
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <div class="container">
+    <div class="section-label reveal">Inside SSA</div>
+    <h2 class="section-title reveal">Learn In The <span class="accent">Room.</span></h2>
+    <div class="gallery-grid">
+      <figure class="gallery-item gallery-item-wide reveal">
+        <div class="gallery-art gallery-art-classroom"><span>SSA / CLASSROOM</span></div>
+        <figcaption>Classroom <small>Focused learning</small></figcaption>
+      </figure>
+      <figure class="gallery-item reveal">
+        <div class="gallery-art gallery-art-training"><span>SSA / TRAINING</span></div>
+        <figcaption>Training <small>Practice with purpose</small></figcaption>
+      </figure>
+      <figure class="gallery-item reveal">
+        <div class="gallery-art gallery-art-students"><span>SSA / STUDENTS</span></div>
+        <figcaption>Students <small>Progress together</small></figcaption>
+      </figure>
+      <figure class="gallery-item gallery-item-wide reveal">
+        <div class="gallery-art gallery-art-moments"><span>SSA / MOMENTS</span></div>
+        <figcaption>Moments <small>Small wins, lasting skills</small></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container faq-layout">
+    <div>
+      <div class="section-label reveal">Need To Know</div>
+      <h2 class="section-title reveal">Questions, <span class="accent">Answered.</span></h2>
+      <p class="faq-intro reveal">A clear path from your first enquiry to your first opportunity.</p>
+    </div>
+    <div class="faq-list reveal">
+      <details open>
+        <summary>Who are the courses for?<span>+</span></summary>
+        <p>Our programs support beginners, graduates, and professionals building practical software skills for the next step in their careers.</p>
+      </details>
+      <details>
+        <summary>Can I speak with an instructor before enrolling?<span>+</span></summary>
+        <p>Yes. Send an enquiry and our team can help you choose a course based on your current skills and goals.</p>
+      </details>
+      <details>
+        <summary>Do courses include practical projects?<span>+</span></summary>
+        <p>Yes. Training is structured around hands-on practice, assessments, and real workplace examples.</p>
+      </details>
+      <details>
+        <summary>Is career guidance included?<span>+</span></summary>
+        <p>Career counselling, resume guidance, mock interviews, and job search assistance are part of our student support.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="contact" id="contact">
   <div class="container">
@@ -342,6 +424,7 @@
           <label for="cMsg">Message (Optional)</label>
         </div>
         <button type="submit" class="submit-btn" id="submitBtn">Send Message</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
       </form>
       <div class="contact-info">
         <div class="info-card tilt-card">
@@ -384,28 +467,35 @@
       <h2>SSA</h2>
       <p>Building careers, one skill at a time. Professional IT training in Anantapuramu, powered by real-world mentors.</p>
       <div class="socials">
-        <a class="soc" href="https://www.instagram.com/" target="_blank" aria-label="Instagram">ℹ</a>
-        <a class="soc" href="https://www.facebook.com/" target="_blank" aria-label="Facebook">f</a>
-        <a class="soc" href="https://wa.me/9390209263" target="_blank" aria-label="WhatsApp">☎</a>
-        <a class="soc" href="https://www.youtube.com/@subhashinivalasani" target="_blank" rel="noopener" aria-label="YouTube">▶</a>
-      </div>
+          <a class="soc" href="https://www.instagram.com/success_software_academy_?igsh=eTVkMjlxNHhzZHFr" target="_blank" aria-label="Instagram">IG</a>
+          <a class="soc" href="https://www.facebook.com/share/aFvPtgFVUAirMCuj/?mibextid=qi2Omg" target="_blank" aria-label="Facebook">FB</a>
+          <a class="soc" href="https://whatsapp.com/channel/0029VbCdXn18V0tjWYIWqj2R" target="_blank" aria-label="WhatsApp Channel">WA</a>
+          <a class="soc" href="https://www.youtube.com/@subhashinivalasani" target="_blank" rel="noopener" aria-label="YouTube">YT</a>
+        </div>
     </div>
     <div class="foot-col">
       <h4>Explore</h4>
       <a href="#home">Home</a>
       <a href="#about">About</a>
       <a href="#courses">Courses</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#videos">Videos</a>
       <a href="#reviews">Reviews</a>
+      <a href="#faq">FAQ</a>
       <a href="#contact">Contact</a>
     </div>
     <div class="foot-col">
-      <h4>Courses</h4>
-      <a href="#courses">C / C++</a>
-      <a href="#courses">Java / Python</a>
-      <a href="#courses">Web Development</a>
-      <a href="#courses">SQL / Power BI</a>
-      <a href="#courses">Advanced Excel</a>
-    </div>
+        <h4>Courses</h4>
+        <a href="#courses">C / C++</a>
+        <a href="#courses">Java / Python</a>
+        <a href="#courses">Web Development</a>
+        <a href="#courses">SQL / Power BI</a>
+      </div>
+      <div class="foot-col">
+        <h4>Publications</h4>
+        <a href="https://www.fsia.in/valasani-subhashini-real-super-women-2020-id-10490" target="_blank">FSIA Super Women 2020</a>
+        <a href="http://irjaes.com/wp-content/uploads/2020/10/IRJAES-V2N2P328Y17.pdf" target="_blank">IRJAES Published Journal</a>
+      </div>
   </div>
   <div class="foot-bottom">
     <p>© 2025 Success Software Academy, Anantapuramu. All Rights Reserved.</p>
@@ -419,6 +509,14 @@
   <span class="wa-tip">Call us now</span>
 </a>
 
-<script src="js/script.js"></script>
+<div class="custom-cursor"></div>
+
+  <script src="js/script.js"></script>
 </body>
 </html>
+
+
+
+
+
+

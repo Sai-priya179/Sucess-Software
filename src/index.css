@@ -1,0 +1,15 @@
+/* Import Tailwind without preflight to avoid breaking existing Vanilla CSS */
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+@utility perspective-1000 {
+  perspective: 1000px;
+}
+
+@utility perspective-1500 {
+  perspective: 1500px;
+}
+
+@utility transform-style-3d {
+  transform-style: preserve-3d;
+}
