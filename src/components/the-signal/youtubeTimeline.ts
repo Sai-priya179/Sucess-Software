@@ -37,6 +37,9 @@ export const buildYoutubeTimeline = (
   // Initialize States
   gsap.set(videos, { autoAlpha: 0, z: -1000, scale: 0.8 });
   gsap.set([tHeadline, tSubline, tCurrentCat], { autoAlpha: 0, y: 50 });
+  gsap.set('.signal-aurora', { rotation: -15, scale: 0.8, autoAlpha: 0.45 });
+  gsap.set('.signal-orbit', { scale: 0.7, rotation: -20, autoAlpha: 0.25 });
+  gsap.set('.signal-scanline', { yPercent: -100 });
   if (signalLine) gsap.set(signalLine, { strokeDashoffset: 100 });
   if (counterNumbers) gsap.set(counterNumbers, { y: 0 });
 
@@ -44,6 +47,9 @@ export const buildYoutubeTimeline = (
   // SCENE 1: INTRO -> VIDEO 01
   // ----------------------------------------------------
   master.addLabel('scene01', 0)
+    .to('.signal-aurora', { rotation: 25, scale: 1.15, autoAlpha: 0.75, duration: 6, ease: 'sine.inOut' }, 'scene01')
+    .to('.signal-orbit', { rotation: 35, scale: 1, autoAlpha: 0.55, duration: 6, ease: 'power2.out' }, 'scene01')
+    .to('.signal-scanline', { yPercent: 100, duration: 5, ease: 'none' }, 'scene01')
     .to(tHeadline, { autoAlpha: 1, y: 0, duration: 2, ease: 'power2.out' }, 'scene01')
     .to(tSubline, { autoAlpha: 0.6, y: 0, duration: 2, ease: 'power2.out' }, 'scene01+=0.5')
     .fromTo(videos[0], 
@@ -125,7 +131,9 @@ export const buildYoutubeTimeline = (
     // Camera pushes slightly through the constellation
     .to(videos, { z: '+=300', opacity: '-=0.2', duration: 4, ease: 'power1.inOut' }, 'scene05')
     // Final text reveal
-    .to(tSubline, { autoAlpha: 1, y: -50, scale: 1.2, duration: 3, ease: 'power2.inOut' }, 'scene05');
+    .to(tSubline, { autoAlpha: 1, y: -50, scale: 1.2, duration: 3, ease: 'power2.inOut' }, 'scene05')
+    .to('.signal-aurora', { rotation: 180, scale: 1.5, autoAlpha: 0.9, duration: 4, ease: 'power2.inOut' }, 'scene05')
+    .to('.signal-orbit', { rotation: 220, scale: 1.35, autoAlpha: 0.8, duration: 4, ease: 'power2.inOut' }, 'scene05');
 
   return master;
 };
