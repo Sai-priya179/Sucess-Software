@@ -1,11 +1,12 @@
-﻿import React, { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 export const SSAVideoNavigation = forwardRef<HTMLDivElement, {}>((_, ref) => {
-  const scrollToLabel = (label: string) => {
+
+  const scrollToScene = (label: string) => {
     const st = ScrollTrigger.getById('the-signal-master');
     if (st && st.animation) {
-      const time = (st.animation as any).labels?.[label];
+      const time = st.animation.labels[label];
       const duration = st.animation.duration();
       if (time !== undefined && duration) {
         const progress = time / duration;
@@ -19,56 +20,15 @@ export const SSAVideoNavigation = forwardRef<HTMLDivElement, {}>((_, ref) => {
   };
 
   return (
-    <div
-      ref={ref}
-      className="absolute top-24 left-6 md:top-28 md:left-12 z-30 text-[0.65rem] tracking-[0.25em] font-mono uppercase text-white/70 flex flex-col items-start gap-2.5 select-none"
-    >
-      <div className="flex items-center gap-2 text-white/40">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-        <span>SSA / THE SIGNAL</span>
+    <div ref={ref} className="absolute top-12 right-12 z-40 text-[0.65rem] tracking-[0.3em] font-bold uppercase text-white/70 mix-blend-difference flex flex-col items-end gap-2">
+      <p className="opacity-50">Explore</p>
+      <div className="flex items-center gap-4 mt-2">
+        <button onClick={() => scrollToScene('scene01')} className="hover:text-white hover:scale-110 transition-all cursor-pointer">01</button>
+        <button onClick={() => scrollToScene('scene02')} className="hover:text-white hover:scale-110 transition-all cursor-pointer">02</button>
+        <button onClick={() => scrollToScene('scene03')} className="hover:text-white hover:scale-110 transition-all cursor-pointer">03</button>
+        <button onClick={() => scrollToScene('scene04')} className="hover:text-white hover:scale-110 transition-all cursor-pointer">ALL</button>
       </div>
-
-      <nav aria-label="Cinematic scenes" className="flex flex-wrap items-center gap-2 md:gap-3 mt-1">
-        <button
-          onClick={() => scrollToLabel('scene01')}
-          className="px-2.5 py-1 rounded border border-white/10 bg-black/40 backdrop-blur hover:border-emerald-400 hover:text-white transition-all cursor-pointer font-bold"
-        >
-          01
-        </button>
-        <button
-          onClick={() => scrollToLabel('scene02')}
-          className="px-2.5 py-1 rounded border border-white/10 bg-black/40 backdrop-blur hover:border-emerald-400 hover:text-white transition-all cursor-pointer font-bold"
-        >
-          02
-        </button>
-        <button
-          onClick={() => scrollToLabel('scene03')}
-          className="px-2.5 py-1 rounded border border-white/10 bg-black/40 backdrop-blur hover:border-emerald-400 hover:text-white transition-all cursor-pointer font-bold"
-        >
-          03
-        </button>
-        <button
-          onClick={() => scrollToLabel('constellation')}
-          className="px-2.5 py-1 rounded border border-white/10 bg-black/40 backdrop-blur hover:border-emerald-400 hover:text-white transition-all cursor-pointer font-bold"
-        >
-          CONSTELLATION
-        </button>
-        <button
-          onClick={() => scrollToLabel('featured')}
-          className="px-2.5 py-1 rounded border border-white/10 bg-black/40 backdrop-blur hover:border-emerald-400 hover:text-white transition-all cursor-pointer font-bold"
-        >
-          FEATURED
-        </button>
-        <button
-          onClick={() => scrollToLabel('archive')}
-          className="px-2.5 py-1 rounded border border-emerald-400/40 bg-emerald-950/40 text-emerald-300 backdrop-blur hover:bg-emerald-400 hover:text-black transition-all cursor-pointer font-bold"
-        >
-          ARCHIVE ↓
-        </button>
-      </nav>
     </div>
   );
 });
-
 SSAVideoNavigation.displayName = 'SSAVideoNavigation';
-

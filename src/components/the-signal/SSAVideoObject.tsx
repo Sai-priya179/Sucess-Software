@@ -1,157 +1,146 @@
-﻿import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
 import { SSAVideo } from './SSAVideoData';
 import { Play } from 'lucide-react';
+import gsap from 'gsap';
 
 interface Props {
   video: SSAVideo;
   className?: string;
   onClick?: () => void;
-  style?: React.CSSProperties;
 }
 
-export const SSAVideoObject = forwardRef<HTMLDivElement, Props>(({ video, className = '', onClick, style }, ref) => {
-  const innerCardRef = useRef<HTMLDivElement>(null);
-  const playRef = useRef<HTMLDivElement>(null);
+export const SSAVideoObject = forwardRef<HTMLDivElement, Props>(({ video, className = '', onClick }, ref) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mainLayerRef = useRef<HTMLDivElement>(null);
+  const playBtnRef = useRef<HTMLDivElement>(null);
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === 'touch' || !innerCardRef.current) return;
-    const rect = innerCardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-
-    innerCardRef.current.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) scale(1.025)`;
-    if (playRef.current) {
-      playRef.current.style.transform = `translate3d(${x * 14}px, ${y * 14}px, 20px)`;
+  // Combine external ref and internal ref
+  const setRefs = (element: HTMLDivElement) => {
+    containerRef.current = element;
+    if (typeof ref === 'function') {
+      ref(element);
+    } else if (ref) {
+      ref.current = element;
     }
   };
 
-  const handlePointerLeave = () => {
-    if (!innerCardRef.current) return;
-    innerCardRef.current.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale(1)';
-    if (playRef.current) {
-      playRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+  useEffect(() => {
+    if (!containerRef.current || !mainLayerRef.current) return;
+    
+    // Add a continuous, randomized floating effect to the main video wrapper
+    const floatCtx = gsap.context(() => {
+      const randomY = gsap.utils.random(8, 15);
+      const randomRot = gsap.utils.random(-1.5, 1.5);
+      const randomDur = gsap.utils.random(3, 5);
+      const randomDelay = gsap.utils.random(0, 2);
+
+      gsap.to(mainLayerRef.current, {
+        y: "+=" + randomY,
+        rotationZ: "+=" + randomRot,
+        duration: randomDur,
+        delay: randomDelay,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1
+      });
+    }, containerRef);
+
+    return () => floatCtx.revert();
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mainLayerRef.current) return;
+    const rect = mainLayerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate tilt angles based on mouse position relative to center
+    const xPct = (x / rect.width) - 0.5;
+    const yPct = (y / rect.height) - 0.5;
+    
+    gsap.to(mainLayerRef.current, {
+      rotateX: -yPct * 20, // Max 10 deg tilt
+      rotateY: xPct * 20,
+      transformPerspective: 1000,
+      duration: 0.4,
+      ease: 'power2.out'
+    });
+
+    if (playBtnRef.current) {
+      gsap.to(playBtnRef.current, {
+        x: xPct * 30,
+        y: yPct * 30,
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!mainLayerRef.current) return;
+    gsap.to(mainLayerRef.current, {
+      rotateX: 0,
+      rotateY: 0,
+      duration: 0.7,
+      ease: 'power3.out'
+    });
+    if (playBtnRef.current) {
+      gsap.to(playBtnRef.current, {
+        x: 0,
+        y: 0,
+        duration: 0.7,
+        ease: 'elastic.out(1, 0.5)'
+      });
     }
   };
 
   return (
-    <div
-      ref={ref}
-      style={style}
-      className={`absolute transform-style-3d will-change-transform select-none ${className}`}
-      data-video-id={video.id}
-    >
-      {/* Fragmentation Layer 1 (Left 35% Slice) */}
-      <div
-        className="frag-layer-1 absolute inset-0 pointer-events-none opacity-0 z-0 overflow-hidden rounded-xl border border-white/10"
-        style={{ clipPath: 'polygon(0% 0%, 36% 0%, 32% 100%, 0% 100%)' }}
-      >
-        <img
-          src={video.thumbnail}
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover opacity-60 filter contrast-125"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-emerald-950/20 mix-blend-overlay" />
+    <div ref={setRefs} className={"absolute transform-style-3d group " + className}>
+      {/* Dynamic Glow Effect */}
+      <div className="absolute inset-0 bg-neutral-900 blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-700 z-0 scale-110">
+        <img src={video.thumbnail} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover saturate-200" />
       </div>
 
-      {/* Fragmentation Layer 2 (Center 35% Slice) */}
-      <div
-        className="frag-layer-2 absolute inset-0 pointer-events-none opacity-0 z-10 overflow-hidden rounded-xl border border-white/15 shadow-2xl"
-        style={{ clipPath: 'polygon(32% 0%, 68% 0%, 64% 100%, 28% 100%)' }}
-      >
-        <img
-          src={video.thumbnail}
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover opacity-80"
-          loading="lazy"
-        />
+      {/* Fragmentation Layer 3 (Deepest) */}
+      <div className="frag-layer-3 absolute inset-0 bg-neutral-900 border border-white/5 opacity-0 z-0 overflow-hidden rounded-xl">
+        <img src={video.thumbnail} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover opacity-20 grayscale blur-md scale-110" />
+      </div>
+      
+      {/* Fragmentation Layer 2 (Middle) */}
+      <div className="frag-layer-2 absolute inset-0 bg-neutral-900 border border-white/10 opacity-0 z-10 overflow-hidden rounded-xl shadow-2xl">
+        <img src={video.thumbnail} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover opacity-40 scale-105 blur-[2px]" />
       </div>
 
-      {/* Fragmentation Layer 3 (Right 35% Slice) */}
-      <div
-        className="frag-layer-3 absolute inset-0 pointer-events-none opacity-0 z-0 overflow-hidden rounded-xl border border-white/10"
-        style={{ clipPath: 'polygon(64% 0%, 100% 0%, 100% 100%, 60% 100%)' }}
-      >
-        <img
-          src={video.thumbnail}
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover opacity-60 filter contrast-125"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-blue-950/20 mix-blend-overlay" />
-      </div>
-
-      {/* Main Physical Video Card */}
-      <div
-        ref={innerCardRef}
+      {/* Main Video Object */}
+      <div 
+        ref={mainLayerRef}
         onClick={onClick}
-        onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="frag-layer-main relative w-full h-full bg-neutral-950 border border-white/15 overflow-hidden cursor-pointer z-20 rounded-xl transition-shadow duration-500 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
         role="button"
-        tabIndex={0}
-        aria-label={`Open video: ${video.title}`}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onClick?.();
-          }
-        }}
-        className="frag-layer-main relative w-full h-full bg-neutral-950 border border-white/20 rounded-xl overflow-hidden cursor-pointer z-20 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] transition-transform duration-300 ease-out group outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+        style={{ transformStyle: 'preserve-3d' }}
       >
-        {/* Poster Image */}
-        <img
-          src={video.thumbnail}
-          alt={video.title}
-          loading="eager"
-          decoding="async"
-          className="w-full h-full object-cover opacity-85 transition-opacity duration-500 group-hover:opacity-100 scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
-        />
-
-        {/* Editorial Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-black/20 pointer-events-none" />
-
-        {/* Top Badges: Pillar & Video Number */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-30 pointer-events-none">
-          <span className="px-2.5 py-1 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[0.6rem] font-mono font-bold tracking-[0.25em] text-emerald-400 uppercase">
-            {video.pillar}
-          </span>
-          <span className="font-mono text-xs font-bold tracking-widest text-white/70">
-            {video.videoNumber}
-          </span>
-        </div>
-
-        {/* Editorial Play Button */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-          <div
-            ref={playRef}
-            className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-black group-hover:border-white shadow-[0_0_30px_rgba(0,0,0,0.5)]"
-          >
-            <Play className="w-5 h-5 md:w-6 md:h-6 ml-0.5 fill-current" />
+        <img src={video.thumbnail} alt={video.title} loading="eager" decoding="async" className="h-full w-full object-cover opacity-70 transition-all duration-700 group-hover:opacity-100 group-hover:scale-105" />
+        
+        {/* Play UI (Elite Magnetic Feel) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40 group-hover:via-transparent transition-all duration-500 flex items-center justify-center">
+          <div ref={playBtnRef} className="w-16 h-16 rounded-full border border-white/40 flex items-center justify-center backdrop-blur-xl bg-black/40 group-hover:bg-white text-white group-hover:text-black transition-colors duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+            <Play className="w-6 h-6 ml-1 fill-current" />
           </div>
         </div>
 
-        {/* Bottom Metadata */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 z-30 pointer-events-none flex flex-col justify-end">
-          <p className="text-[0.65rem] tracking-[0.25em] uppercase font-mono text-white/60 mb-1.5 transition-transform duration-300 group-hover:-translate-y-1">
-            {video.category}
-          </p>
-          <h3 className="text-base md:text-xl font-bold text-white tracking-tight leading-snug line-clamp-2 drop-shadow transition-transform duration-300 group-hover:-translate-y-1">
-            {video.title}
-          </h3>
-          {video.duration && (
-            <div className="mt-2.5 flex items-center gap-2 text-[0.6rem] font-mono text-white/40 tracking-wider">
-              <span>{video.duration}</span>
-              <span>•</span>
-              <span className="text-emerald-400/80 uppercase">Click to open cinema</span>
-            </div>
-          )}
+        {/* Metadata */}
+        <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end transform-style-3d translate-z-10">
+          <div className="overflow-hidden">
+            <p className="text-[0.65rem] tracking-[0.2em] text-white/70 uppercase mb-2 transform translate-y-6 group-hover:translate-y-0 transition-transform duration-500 ease-out">{video.category}</p>
+          </div>
+          <div className="overflow-hidden">
+            <h3 className="text-xl md:text-2xl font-medium text-white tracking-tight transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500 delay-75 ease-out drop-shadow-md">{video.title}</h3>
+          </div>
         </div>
       </div>
     </div>
   );
 });
-
 SSAVideoObject.displayName = 'SSAVideoObject';
