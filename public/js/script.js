@@ -1,4 +1,4 @@
-const isMobile = window.matchMedia('(max-width: 768px)').matches;
+﻿const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
 // 1. PRELOADER & TEXT ASSEMBLY
 const initPreloader = () => {
@@ -554,7 +554,7 @@ const initGalleryLightbox = () => {
         const caption = item.querySelector('figcaption')?.innerHTML || '';
         const modal = document.createElement('div');
         modal.className = 'gallery-modal';
-        modal.innerHTML = `<div class="gallery-modal-inner" role="dialog" aria-modal="true" aria-label="Gallery preview"><button type="button" class="gallery-modal-close" aria-label="Close gallery preview">×</button><div class="gallery-modal-art ${art.className.replace('gallery-art', '')}"></div><div class="gallery-modal-caption">${caption}</div></div>`;
+        modal.innerHTML = `<div class="gallery-modal-inner" role="dialog" aria-modal="true" aria-label="Gallery preview"><button type="button" class="gallery-modal-close" aria-label="Close gallery preview">Ã—</button><div class="gallery-modal-art ${art.className.replace('gallery-art', '')}"></div><div class="gallery-modal-caption">${caption}</div></div>`;
         modal.addEventListener('click', event => { if (event.target === modal || event.target.closest('.gallery-modal-close')) close(); });
         document.body.appendChild(modal);
     }));
@@ -736,16 +736,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Custom Cursor Logic
-const cursor = document.querySelector('.custom-cursor');
-
-
-document.querySelectorAll('a, button, input, .course-card, .video-feature').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); });
-  el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); });
-});
-
-
 // Magnetic Buttons
 document.querySelectorAll('.btn').forEach(btn => {
   btn.addEventListener('mousemove', function(e) {
@@ -758,6 +748,7 @@ document.querySelectorAll('.btn').forEach(btn => {
     this.style.transform = 'translate(0px, 0px)';
   });
 });
+
 
 
 

@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 
 @font-face { font-family: "Plus Jakarta Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yygg_vbd-E.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
 
@@ -672,7 +672,7 @@ section { position: relative; padding: clamp(60px, 10vw, 140px) 5%; overflow: hi
 
 .submit-btn.success { background: rgb(22, 163, 74); color: white; }
 
-.submit-btn.success::after { content: "✓"; color: rgb(255, 255, 255); font-size: 1.2rem; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.submit-btn.success::after { content: "âœ“"; color: rgb(255, 255, 255); font-size: 1.2rem; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 
 @keyframes spin { 
   100% { transform: translate(-50%, -50%) rotate(360deg); }
@@ -862,3 +862,228 @@ html.lenis, html.lenis body {
 
 
 .tilt-card { transition: transform 0.4s cubic-bezier(0.3, 1.3, 0.5, 1) !important; }
+
+
+/* ===================================================
+   ELEVATED OUR ACADEMY (ABOUT) SECTION STYLES
+   =================================================== */
+.about-pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.about-pillar-card {
+  background: rgba(13, 21, 68, 0.45);
+  border: 1px solid rgba(240, 165, 0, 0.2);
+  border-radius: 14px;
+  padding: 20px 18px;
+  backdrop-filter: blur(16px);
+  transition: transform 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+}
+
+.about-pillar-card:hover {
+  border-color: var(--gold-hot);
+  background: rgba(13, 21, 68, 0.7);
+  transform: translateY(-4px);
+}
+
+.about-pillar-card .pillar-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.about-pillar-card h4 {
+  font-family: var(--font-h);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.about-pillar-card p {
+  font-size: 0.82rem !important;
+  line-height: 1.6 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 0 !important;
+}
+
+.about-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-family: var(--font-b);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.stat-badge .pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px #34d399;
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.glance-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.glance-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(240, 165, 0, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--white-soft);
+}
+
+.glance-list li:last-child {
+  border-bottom: none;
+}
+
+.glance-list li strong {
+  color: var(--gold-hot);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Founder Credibility Card */
+.founder-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(20, 28, 77, 0.75), rgba(10, 15, 46, 0.55));
+  border: 1px solid rgba(240, 165, 0, 0.3);
+  border-radius: 18px;
+  padding: 28px 24px;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.founder-card:hover {
+  border-color: var(--gold-hot);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(240, 165, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+.founder-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.founder-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-hot), #b45309);
+  color: #000;
+  font-family: var(--font-h);
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(240, 165, 0, 0.4);
+}
+
+.founder-tag {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold-hot);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.founder-name {
+  font-family: var(--font-h);
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--white);
+  line-height: 1.2;
+}
+
+.founder-role {
+  font-size: 0.8rem;
+  color: var(--white-soft);
+  margin-bottom: 0 !important;
+}
+
+.founder-awards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.award-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.award-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.award-item strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--white);
+  line-height: 1.3;
+}
+
+.award-item small {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}
+
+.founder-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-hot);
+  transition: color 0.2s, gap 0.2s;
+}
+
+.founder-link:hover {
+  color: #fff;
+  gap: 12px;
+}
