@@ -1,6 +1,7 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
 import { SSAVideo } from './SSAVideoData';
 import { Play } from 'lucide-react';
+import gsap from 'gsap';
 
 interface Props {
   video: SSAVideo;
@@ -9,8 +10,48 @@ interface Props {
 }
 
 export const SSAVideoObject = forwardRef<HTMLDivElement, Props>(({ video, className = '', onClick }, ref) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Combine external ref and internal ref
+  const setRefs = (element: HTMLDivElement) => {
+    containerRef.current = element;
+    if (typeof ref === 'function') {
+      ref(element);
+    } else if (ref) {
+      ref.current = element;
+    }
+  };
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    // Add a continuous, randomized floating effect to the main video wrapper
+    // This runs completely independently of the scroll timeline
+    const floatCtx = gsap.context(() => {
+      const mainLayer = containerRef.current!.querySelector('.frag-layer-main');
+      if (!mainLayer) return;
+
+      const randomY = gsap.utils.random(8, 15);
+      const randomRot = gsap.utils.random(-1.5, 1.5);
+      const randomDur = gsap.utils.random(3, 5);
+      const randomDelay = gsap.utils.random(0, 2);
+
+      gsap.to(mainLayer, {
+        y: \+=\\,
+        rotationZ: \+=\\,
+        duration: randomDur,
+        delay: randomDelay,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1
+      });
+    }, containerRef);
+
+    return () => floatCtx.revert();
+  }, []);
+
   return (
-    <div ref={ref} className={"absolute transform-style-3d group " + className}>
+    <div ref={setRefs} className={"absolute transform-style-3d group " + className}>
       {/* Fragmentation Layer 3 (Deepest) */}
       <div className="frag-layer-3 absolute inset-0 bg-neutral-900 border border-white/5 opacity-0 z-0 overflow-hidden">
         <img src={video.thumbnail} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover opacity-30 grayscale blur-sm scale-110" />
@@ -24,7 +65,7 @@ export const SSAVideoObject = forwardRef<HTMLDivElement, Props>(({ video, classN
       {/* Main Video Object */}
       <div 
         onClick={onClick}
-        className="frag-layer-main relative w-full h-full bg-neutral-950 border border-white/10 overflow-hidden cursor-pointer z-20 transition-transform duration-500 ease-out hover:scale-[1.03]"
+        className="frag-layer-main relative w-full h-full bg-neutral-950 border border-white/10 overflow-hidden cursor-pointer z-20 transition-transform duration-500 ease-out group-hover:scale-[1.03]"
         role="button"
       >
         <img src={video.thumbnail} alt={video.title} loading="eager" decoding="async" className="h-full w-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100" />

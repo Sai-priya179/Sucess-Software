@@ -726,6 +726,12 @@ window.addEventListener('DOMContentLoaded', () => {
     // initHeroVideoScroll();
     initFloatingDots();
     initMobileMenu();
+
+    // Slow down hero video by 25%
+    const heroVideo = document.getElementById('heroVideo');
+    if (heroVideo) {
+        heroVideo.playbackRate = 0.75;
+    }
     initFormSubmission();
 });
 
@@ -752,6 +758,7 @@ document.querySelectorAll('.btn').forEach(btn => {
     this.style.transform = 'translate(0px, 0px)';
   });
 });
+
 
 
 
