@@ -8,14 +8,6 @@ export default defineConfig({
     tailwindcss()
   ],
   build: {
-    outDir: 'dist',
-    rollupOptions: {
-      input: 'src/mount.tsx',
-      output: {
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      }
-    }
+    outDir: 'dist'
   }
 });

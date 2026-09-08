@@ -33,12 +33,20 @@ export const SSAVideoExperience: React.FC = () => {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
+    let pointerFrame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
 
     const handlePointerMove = (event: PointerEvent) => {
-      const x = (event.clientX / window.innerWidth - 0.5) * 2;
-      const y = (event.clientY / window.innerHeight - 0.5) * 2;
-      section.style.setProperty('--pointer-x', x.toFixed(3));
-      section.style.setProperty('--pointer-y', y.toFixed(3));
+      if (event.pointerType === 'touch') return;
+      pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
+      pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
+      if (pointerFrame) return;
+      pointerFrame = requestAnimationFrame(() => {
+        section.style.setProperty('--pointer-x', pointerX.toFixed(3));
+        section.style.setProperty('--pointer-y', pointerY.toFixed(3));
+        pointerFrame = 0;
+      });
     };
     const resetPointer = () => {
       section.style.setProperty('--pointer-x', '0');
@@ -48,6 +56,7 @@ export const SSAVideoExperience: React.FC = () => {
     section.addEventListener('pointermove', handlePointerMove);
     section.addEventListener('pointerleave', resetPointer);
     return () => {
+      if (pointerFrame) cancelAnimationFrame(pointerFrame);
       section.removeEventListener('pointermove', handlePointerMove);
       section.removeEventListener('pointerleave', resetPointer);
     };
@@ -61,6 +70,8 @@ export const SSAVideoExperience: React.FC = () => {
 
     let ctx = gsap.context(() => {
       let mm = gsap.matchMedia();
+      let progressFrame = 0;
+      let pendingProgress = 0;
 
       mm.add("(min-width: 320px)", () => {
         const textRefs = {
@@ -77,15 +88,22 @@ export const SSAVideoExperience: React.FC = () => {
           signalRef.current,
           counterNumbersRef.current,
           (progress) => {
-            if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress})`;
-            if (progressLabelRef.current) progressLabelRef.current.textContent = `${Math.round(progress * 100).toString().padStart(2, '0')}%`;
+            pendingProgress = progress;
+            if (progressFrame) return;
+            progressFrame = requestAnimationFrame(() => {
+              if (progressRef.current) progressRef.current.style.transform = `scaleX(${pendingProgress})`;
+              if (progressLabelRef.current) progressLabelRef.current.textContent = `${Math.round(pendingProgress * 100).toString().padStart(2, '0')}%`;
+              progressFrame = 0;
+            });
           },
           prefersReducedMotion // Pass this flag to optionally simplify timeline
         );
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+    };
   }, []);
 
   return (

@@ -10,15 +10,15 @@ interface Props {
 
 export const SSAVideoObject = forwardRef<HTMLDivElement, Props>(({ video, className = '', onClick }, ref) => {
   return (
-    <div ref={ref} className={"absolute transform-style-3d will-change-transform group " + className}>
+    <div ref={ref} className={"absolute transform-style-3d group " + className}>
       {/* Fragmentation Layer 3 (Deepest) */}
       <div className="frag-layer-3 absolute inset-0 bg-neutral-900 border border-white/5 opacity-0 z-0 overflow-hidden">
-        <img src={video.thumbnail} alt="" className="w-full h-full object-cover opacity-30 grayscale blur-sm scale-110" />
+        <img src={video.thumbnail} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover opacity-30 grayscale blur-sm scale-110" />
       </div>
       
       {/* Fragmentation Layer 2 (Middle) */}
       <div className="frag-layer-2 absolute inset-0 bg-neutral-900 border border-white/10 opacity-0 z-10 overflow-hidden">
-        <img src={video.thumbnail} alt="" className="w-full h-full object-cover opacity-60 scale-105" />
+        <img src={video.thumbnail} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover opacity-60 scale-105" />
       </div>
 
       {/* Main Video Object */}
@@ -27,7 +27,7 @@ export const SSAVideoObject = forwardRef<HTMLDivElement, Props>(({ video, classN
         className="frag-layer-main relative w-full h-full bg-neutral-950 border border-white/10 overflow-hidden cursor-pointer z-20 transition-transform duration-500 ease-out hover:scale-[1.03]"
         role="button"
       >
-        <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+        <img src={video.thumbnail} alt={video.title} loading="eager" decoding="async" className="h-full w-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
         
         {/* Play UI (Minimal Editorial) */}
         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 flex items-center justify-center">

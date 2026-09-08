@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
-import { useYouTubeAPI } from '../../hooks/useYouTubeAPI';
-import { X, ExternalLink, AlertCircle } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
 import { SSAVideo } from './SSAVideoData';
 import gsap from 'gsap';
 
@@ -10,14 +9,11 @@ interface SSACinematicPlayerProps {
 }
 
 export const SSACinematicPlayer: React.FC<SSACinematicPlayerProps> = ({ video, onClose }) => {
-  const isAPIReady = useYouTubeAPI();
-  const playerContainerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const playerWrapperRef = useRef<HTMLDivElement>(null);
   const metadataRef = useRef<HTMLDivElement>(null);
-  const playerInstance = useRef<any>(null);
   
-  const [playerStatus, setPlayerStatus] = useState<'loading' | 'ready' | 'playing' | 'paused' | 'ended' | 'error'>('loading');
+  const [playerStatus, setPlayerStatus] = useState<'loading' | 'ready'>('loading');
 
   // Lock scroll on mount, unlock on unmount
   useEffect(() => {
@@ -54,41 +50,6 @@ export const SSACinematicPlayer: React.FC<SSACinematicPlayerProps> = ({ video, o
     
     return () => ctx.revert();
   }, []);
-
-  useEffect(() => {
-    if (!isAPIReady || !playerContainerRef.current) return;
-    
-    try {
-      playerInstance.current = new window.YT.Player(playerContainerRef.current, {
-        videoId: video.youtubeId,
-        playerVars: {
-          playsinline: 1,
-          rel: 0,
-          autoplay: 1,
-          modestbranding: 1
-        },
-        events: {
-          onReady: () => setPlayerStatus('ready'),
-          onStateChange: (event: any) => {
-            const state = event.data;
-            if (state === window.YT.PlayerState.PLAYING) setPlayerStatus('playing');
-            else if (state === window.YT.PlayerState.PAUSED) setPlayerStatus('paused');
-            else if (state === window.YT.PlayerState.ENDED) setPlayerStatus('ended');
-            else if (state === window.YT.PlayerState.UNSTARTED) setPlayerStatus('ready');
-          },
-          onError: () => setPlayerStatus('error')
-        }
-      });
-    } catch (e) {
-      setPlayerStatus('error');
-    }
-
-    return () => {
-      if (playerInstance.current && typeof playerInstance.current.destroy === 'function') {
-        playerInstance.current.destroy();
-      }
-    };
-  }, [isAPIReady, video.youtubeId]);
 
   const handleClose = () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -147,26 +108,22 @@ export const SSACinematicPlayer: React.FC<SSACinematicPlayerProps> = ({ video, o
           </div>
         )}
 
-        {/* Error / Fallback State */}
-        {playerStatus === 'error' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a0a] text-center p-6">
-            <AlertCircle className="w-10 h-10 text-red-500/80 mb-6" />
-            <h3 className="text-white text-2xl font-bold tracking-tight mb-2">Video Unavailable</h3>
-            <p className="text-white/40 max-w-md mb-8 text-sm">The cinematic player could not connect to YouTube.</p>
-            <button 
-              onClick={handleFallback}
-              className="flex items-center gap-3 bg-white text-black hover:bg-emerald-400 px-8 py-4 rounded-full font-bold uppercase tracking-widest text-[0.7rem] transition-colors"
-            >
-              Watch on YouTube
-              <ExternalLink className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        <div 
-          ref={playerContainerRef} 
-          className={"w-full h-full transition-opacity duration-1000 ease-out " + (playerStatus === 'error' ? 'opacity-0' : 'opacity-100')} 
+        <iframe
+          title={video.title}
+          src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3`}
+          className={"h-full w-full transition-opacity duration-700 " + (playerStatus === 'ready' ? 'opacity-100' : 'opacity-0')}
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowFullScreen
+          onLoad={() => setPlayerStatus('ready')}
         />
+        <div className="absolute inset-0 -z-0 flex flex-col items-center justify-center bg-[#0a0a0a] text-center p-6">
+          <div className="w-12 h-12 border-2 border-white/10 border-t-emerald-300 rounded-full animate-spin mb-4" />
+          <p className="text-[0.65rem] tracking-[0.3em] uppercase text-white/50 font-bold">Connecting Signal</p>
+          <button onClick={handleFallback} className="mt-6 flex items-center gap-3 rounded-full bg-white px-6 py-3 text-[0.65rem] font-bold uppercase tracking-widest text-black hover:bg-emerald-400 transition-colors">
+            Open on YouTube
+            <ExternalLink className="w-4 h-4" />
+          </button>
+        </div>
         
       </div>
     </div>

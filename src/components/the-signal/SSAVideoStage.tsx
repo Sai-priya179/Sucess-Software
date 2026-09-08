@@ -6,7 +6,7 @@ interface Props {
 
 export const SSAVideoStage = forwardRef<HTMLDivElement, Props>(({ children }, ref) => {
   return (
-    <div className="h-[20000px] w-full" id="the-signal-scroll-container">
+    <div className="h-[8500px] w-full md:h-[14000px]" id="the-signal-scroll-container">
       <div 
         ref={ref} 
         className="relative w-full h-screen overflow-hidden bg-[#050505] text-white perspective-1500"

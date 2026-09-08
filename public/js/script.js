@@ -360,6 +360,16 @@ const initScrollObserver = () => {
     // Nav tracking
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+    const youtubeLink = document.querySelector('.nav-links a[href="#videos"]');
+    if (youtubeLink) {
+        youtubeLink.addEventListener('click', event => {
+            const videos = document.getElementById('videos');
+            if (!videos) return;
+            event.preventDefault();
+            const targetTop = videos.getBoundingClientRect().top + window.scrollY;
+            window.scrollTo({ top: targetTop, behavior: 'smooth' });
+        });
+    }
     window.addEventListener('scroll', () => {
         let current = '';
         sections.forEach(sec => {
@@ -742,7 +752,6 @@ document.querySelectorAll('.btn').forEach(btn => {
     this.style.transform = 'translate(0px, 0px)';
   });
 });
-
 
 
 

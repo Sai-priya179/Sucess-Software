@@ -20,14 +20,18 @@ export const buildYoutubeTimeline = (
     return gsap.timeline();
   }
 
+  const scrollDistance = window.matchMedia('(max-width: 767px)').matches ? 8500 : 14000;
   const master = gsap.timeline({
     scrollTrigger: {
       id: 'the-signal-master',
       trigger: section,
       start: 'top top',
-      end: '+=20000', // Massive scroll area for slow, cinematic pace
+      end: `+=${scrollDistance}`,
       pin: viewport,
-      scrub: 1.5, // Smooth scrubbing
+      scrub: 0.85,
+      anticipatePin: 1,
+      fastScrollEnd: true,
+      invalidateOnRefresh: true,
       onUpdate: (self) => onProgress(self.progress)
     }
   });
