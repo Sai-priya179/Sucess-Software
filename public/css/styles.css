@@ -1087,3 +1087,211 @@ html.lenis, html.lenis body {
   color: #fff;
   gap: 12px;
 }
+
+
+/* ===================================================
+   AUTHENTIC STUDENT CONVOCATION GALLERY STYLES
+   =================================================== */
+.gallery-header-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+@media (min-width: 768px) {
+  .gallery-header-row {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.gallery-insta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: rgba(225, 48, 108, 0.12);
+  border: 1px solid rgba(225, 48, 108, 0.35);
+  color: #ff6b8b;
+  font-family: var(--font-b);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.gallery-insta-pill:hover {
+  background: rgba(225, 48, 108, 0.25);
+  border-color: #ff6b8b;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(225, 48, 108, 0.25);
+}
+
+.gallery-grid-photo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.gallery-photo-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(13, 21, 68, 0.7), rgba(8, 12, 38, 0.85));
+  border: 1px solid rgba(240, 165, 0, 0.25);
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  cursor: pointer;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.gallery-photo-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--gold-hot);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(240, 165, 0, 0.18);
+}
+
+.gallery-photo-card .img-container {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  overflow: hidden;
+  background: #050713;
+}
+
+.gallery-photo-card .img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.gallery-photo-card:hover .img-container img {
+  transform: scale(1.05);
+}
+
+.gallery-photo-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(240, 165, 0, 0.4);
+  color: var(--gold-hot);
+  font-family: var(--font-b);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.gallery-zoom-indicator {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.gallery-photo-card:hover .gallery-zoom-indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.gallery-photo-content {
+  padding: 24px;
+}
+
+.gallery-photo-content h3 {
+  font-family: var(--font-h);
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--white);
+  line-height: 1.25;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+
+.gallery-photo-content p {
+  font-size: 0.85rem;
+  color: var(--white-soft);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.gallery-photo-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 14px;
+  font-family: var(--font-b);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.05em;
+}
+
+.gallery-photo-meta strong {
+  color: var(--gold-hot);
+}
+
+/* Modal Image Full View */
+.gallery-modal-img-wrap {
+  width: 100%;
+  max-height: 68vh;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-modal-img {
+  width: 100%;
+  max-height: 68vh;
+  object-fit: contain;
+}
+
+
+.gallery-photo-meta .post-link {
+  color: #ff6b8b;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.gallery-photo-meta .post-link:hover {
+  color: #fff;
+  transform: translateX(3px);
+}
+
+@media (min-width: 1024px) {
+  .gallery-grid-photo {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -1,4 +1,4 @@
-﻿const isMobile = window.matchMedia('(max-width: 768px)').matches;
+const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
 // 1. PRELOADER & TEXT ASSEMBLY
 const initPreloader = () => {
@@ -546,17 +546,43 @@ const initScrollProgress = () => {
 };
 
 const initGalleryLightbox = () => {
-    const items = document.querySelectorAll('.gallery-item');
+    const items = document.querySelectorAll('.gallery-photo-card, .gallery-item');
     if (!items.length) return;
-    const close = () => document.querySelector('.gallery-modal')?.remove();
+    const close = () => {
+        const modal = document.querySelector('.gallery-modal');
+        if (modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => modal.remove(), 250);
+        }
+    };
     items.forEach(item => item.addEventListener('click', () => {
-        const art = item.querySelector('.gallery-art');
-        const caption = item.querySelector('figcaption')?.innerHTML || '';
+        const img = item.querySelector('img');
+        const title = item.querySelector('h3')?.innerText || item.querySelector('figcaption')?.innerText || 'SSA Convocation Moment';
+        const desc = item.querySelector('p')?.innerText || '';
+        const instaUrl = item.getAttribute('data-insta') || 'https://www.instagram.com/success_software_academy_/';
         const modal = document.createElement('div');
         modal.className = 'gallery-modal';
-        modal.innerHTML = `<div class="gallery-modal-inner" role="dialog" aria-modal="true" aria-label="Gallery preview"><button type="button" class="gallery-modal-close" aria-label="Close gallery preview">Ã—</button><div class="gallery-modal-art ${art.className.replace('gallery-art', '')}"></div><div class="gallery-modal-caption">${caption}</div></div>`;
-        modal.addEventListener('click', event => { if (event.target === modal || event.target.closest('.gallery-modal-close')) close(); });
+        modal.style.opacity = '0';
+        modal.style.transition = 'opacity 0.25s ease';
+        modal.innerHTML = `
+          <div class="gallery-modal-inner" role="dialog" aria-modal="true" aria-label="Gallery preview">
+            <button type="button" class="gallery-modal-close" aria-label="Close gallery preview">✕</button>
+            ${img ? `<div class="gallery-modal-img-wrap"><img src="${img.src}" class="gallery-modal-img" alt="${title}" /></div>` : ''}
+            <div class="gallery-modal-caption">
+              <h4 style="font-family: var(--font-h); color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 6px;">${title}</h4>
+              ${desc ? `<small style="color: rgba(255,255,255,0.75); display:block; line-height: 1.5; font-size: 0.85rem; margin-bottom: 12px;">${desc}</small>` : ''}
+              <div style="padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <a href="${instaUrl}" target="_blank" rel="noopener noreferrer" style="color: #ff6b8b; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                  View Original Post on Instagram ↗
+                </a>
+              </div>
+            </div>
+          </div>`;
+        modal.addEventListener('click', event => { 
+          if (event.target === modal || event.target.closest('.gallery-modal-close')) close(); 
+        });
         document.body.appendChild(modal);
+        requestAnimationFrame(() => { modal.style.opacity = '1'; });
     }));
     document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
 };
