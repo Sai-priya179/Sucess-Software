@@ -327,7 +327,7 @@ section { position: relative; padding: clamp(60px, 10vw, 140px) 5%; overflow: hi
   100% { transform: translateY(-50%) rotate(360deg); }
 }
 
-.stat-card { position: relative; padding: 44px 38px; background: linear-gradient(145deg, rgba(13, 21, 68, 0.65), rgba(10, 15, 46, 0.4)); border: 1px solid rgba(240, 165, 0, 0.25); border-radius: 18px; backdrop-filter: blur(20px); overflow: hidden; transition: transform 0.5s; }
+.stat-card { position: relative; transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); padding: 44px 38px; background: linear-gradient(145deg, rgba(13, 21, 68, 0.65), rgba(10, 15, 46, 0.4)); border: 1px solid rgba(240, 165, 0, 0.25); border-radius: 18px; backdrop-filter: blur(20px); overflow: hidden; transition: transform 0.5s; }
 
 .stat-card::before { content: ""; position: absolute; inset: 0px; background: linear-gradient(120deg, transparent 30%, rgba(255, 204, 68, 0.15) 50%, transparent 70%) 200% 0px / 200% 200%; transition: background-position 0.8s; pointer-events: none; }
 
@@ -424,7 +424,7 @@ section { position: relative; padding: clamp(60px, 10vw, 140px) 5%; overflow: hi
 
 .course-card:hover::after { background-position: -100% 0px; }
 
-.course-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: rgba(240, 165, 0, 0.18) 0px 30px 60px, rgba(240, 165, 0, 0.12) 0px 0px 40px; }
+.course-card:hover { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-12px) scale(1.02); box-shadow: rgba(240, 165, 0, 0.18) 0px 30px 60px, rgba(240, 165, 0, 0.12) 0px 0px 40px; }
 
 .course-icon { font-size: 3rem; margin-bottom: 18px; transition: transform 0.6s; display: inline-block; filter: drop-shadow(rgba(240, 165, 0, 0.4) 0px 6px 20px); }
 
@@ -452,7 +452,7 @@ section { position: relative; padding: clamp(60px, 10vw, 140px) 5%; overflow: hi
   .commit-grid { grid-template-columns: 1fr; }
 }
 
-.commit-card { position: relative; padding: 48px 42px; background: rgba(13, 21, 68, 0.6); backdrop-filter: blur(18px); border-right: 1px solid rgba(240, 165, 0, 0.18); border-bottom: 1px solid rgba(240, 165, 0, 0.18); border-left: 1px solid rgba(240, 165, 0, 0.18); border-image: initial; border-radius: 18px; border-top: 3px solid var(--gold-hot); transition: transform 0.3s, box-shadow 0.4s; overflow: hidden; will-change: transform; }
+.commit-card { position: relative; transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); padding: 48px 42px; background: rgba(13, 21, 68, 0.6); backdrop-filter: blur(18px); border-right: 1px solid rgba(240, 165, 0, 0.18); border-bottom: 1px solid rgba(240, 165, 0, 0.18); border-left: 1px solid rgba(240, 165, 0, 0.18); border-image: initial; border-radius: 18px; border-top: 3px solid var(--gold-hot); transition: transform 0.3s, box-shadow 0.4s; overflow: hidden; will-change: transform; }
 
 .commit-card::before { content: ""; position: absolute; top: 0px; left: 0px; right: 0px; height: 40%; background: radial-gradient(at center top, rgba(240, 165, 0, 0.15), transparent 70%); pointer-events: none; }
 
@@ -768,15 +768,10 @@ section, footer { z-index: 2; }
   background: rgba(1, 2, 8, 0.62) !important;
 }
 
-nav, .nav-links, .loc-badge, .btn-ghost, .stat-card, .course-card, .commit-card, .testi, .contact-form, .info-card, .wa-tip {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
+nav, .nav-links, .loc-badge, .btn-ghost, .wa-tip { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
 /* Transparent surfaces let the hero media carry the visual background. */
-nav, .nav-links, section, footer, .about, .mission, .courses, .commitment, .stats, .reviews, .gallery, .videos, .contact, .stat-card, .course-card, .commit-card, .testi, .contact-form, .info-card, .video-card, .video-feature, .loc-badge, .btn-ghost {
-  background: transparent !important;
-}
+nav, .nav-links, section, footer, .about, .mission, .courses, .commitment, .stats, .reviews, .gallery, .videos, .contact, .video-feature, .loc-badge, .btn-ghost { background: transparent !important; }
 .site-video-shade { background: rgba(0, 0, 0, 0.2); }
 .hero-locked { overflow: hidden !important; }
 .floating-dots { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
@@ -864,3 +859,6 @@ html.lenis, html.lenis body {
   .hero-sub { font-size: 1.1rem !important; }
   section { padding: 80px 5% !important; }
 }
+
+
+.tilt-card { transition: transform 0.4s cubic-bezier(0.3, 1.3, 0.5, 1) !important; }
