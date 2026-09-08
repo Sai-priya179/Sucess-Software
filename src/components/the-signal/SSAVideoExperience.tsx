@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useEffect, useState } from 'react';
+﻿import React, { useRef, useLayoutEffect, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -8,6 +8,8 @@ import { SSAVideoConstellation } from './SSAVideoConstellation';
 import { SSAVideoNavigation } from './SSAVideoNavigation';
 import { SSAVideoCounter } from './SSAVideoCounter';
 import { SSASignalLine } from './SSASignalLine';
+import { SSAVideoMetadata } from './SSAVideoMetadata';
+import { SSAVideoArchive } from './SSAVideoArchive';
 import { ssaVideoData, SSAVideo } from './SSAVideoData';
 import { buildYoutubeTimeline } from './youtubeTimeline';
 import { SSACinematicPlayer } from './SSACinematicPlayer';
@@ -22,14 +24,15 @@ export const SSAVideoExperience: React.FC = () => {
   
   const videosRef = useRef<(HTMLDivElement | null)[]>([]);
   
-  const tHeadlineRef = useRef<HTMLHeadingElement>(null);
-  const tSublineRef = useRef<HTMLHeadingElement>(null);
-  const tCurrentCatRef = useRef<HTMLParagraphElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const progressLabelRef = useRef<HTMLSpanElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const sublineRef = useRef<HTMLHeadingElement>(null);
+  const categoryRef = useRef<HTMLParagraphElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  const activeVideoNumberRef = useRef<HTMLSpanElement>(null);
 
   const [activeVideo, setActiveVideo] = useState<SSAVideo | null>(null);
 
+  // Subtle 3D Pointer Tracking for ambient perspective
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -62,42 +65,27 @@ export const SSAVideoExperience: React.FC = () => {
     };
   }, []);
 
+  // GSAP ScrollTrigger Master Timeline Construction
   useLayoutEffect(() => {
     if (!sectionRef.current || !viewportRef.current) return;
 
-    // Check prefers-reduced-motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    let ctx = gsap.context(() => {
-      let mm = gsap.matchMedia();
-      let progressFrame = 0;
-      let pendingProgress = 0;
-
-      mm.add("(min-width: 320px)", () => {
-        const textRefs = {
-          tHeadline: tHeadlineRef.current,
-          tSubline: tSublineRef.current,
-          tCurrentCat: tCurrentCatRef.current
-        };
-
-        buildYoutubeTimeline(
-          sectionRef.current!,
-          viewportRef.current!,
-          videosRef.current,
-          textRefs,
-          signalRef.current,
-          counterNumbersRef.current,
-          (progress) => {
-            pendingProgress = progress;
-            if (progressFrame) return;
-            progressFrame = requestAnimationFrame(() => {
-              if (progressRef.current) progressRef.current.style.transform = `scaleX(${pendingProgress})`;
-              if (progressLabelRef.current) progressLabelRef.current.textContent = `${Math.round(pendingProgress * 100).toString().padStart(2, '0')}%`;
-              progressFrame = 0;
-            });
-          },
-          prefersReducedMotion // Pass this flag to optionally simplify timeline
-        );
+    const ctx = gsap.context(() => {
+      buildYoutubeTimeline({
+        section: sectionRef.current!,
+        viewport: viewportRef.current!,
+        videos: videosRef.current,
+        metadataRefs: {
+          headline: headlineRef.current,
+          subline: sublineRef.current,
+          category: categoryRef.current,
+          desc: descRef.current,
+          activeVideoNumber: activeVideoNumberRef.current
+        },
+        signalLine: signalRef.current,
+        counterNumbers: counterNumbersRef.current,
+        prefersReducedMotion
       });
     }, sectionRef);
 
@@ -107,39 +95,32 @@ export const SSAVideoExperience: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-black overflow-hidden" id="videos">
+    <section 
+      ref={sectionRef} 
+      className="relative w-full bg-[#030303] text-white overflow-hidden" 
+      id="the-signal-section"
+      aria-label="SSA The Signal - Cinematic Media System"
+    >
+      {/* Pinned Cinematic Stage */}
       <SSAVideoStage ref={viewportRef}>
-        <div className="absolute left-8 top-8 z-40 flex items-center gap-3 text-[0.6rem] font-bold uppercase tracking-[0.35em] text-white/50 mix-blend-difference md:left-12 md:top-12">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.9)]" />
-          <span>Live learning archive</span>
-        </div>
-        <div className="absolute bottom-10 left-8 z-40 flex w-44 flex-col gap-2 text-[0.6rem] font-mono uppercase tracking-[0.3em] text-white/50 mix-blend-difference md:left-12">
-          <div className="flex justify-between"><span>Signal</span><span ref={progressLabelRef}>00%</span></div>
-          <div className="h-px w-full overflow-hidden bg-white/20"><div ref={progressRef} className="h-full origin-left scale-x-0 bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,0.9)]" /></div>
-        </div>
-        
-        {/* Navigation & Counter Overlays */}
+        {/* Navigation & Signal Spine */}
         <SSAVideoNavigation />
         <SSAVideoCounter ref={counterNumbersRef} />
-        
-        {/* Signal Tracking Line */}
         <SSASignalLine ref={signalRef} />
 
-        {/* Global Editorial Typography */}
-        <div className="absolute inset-0 pointer-events-none z-20 flex flex-col items-center justify-center text-center">
-          <p ref={tCurrentCatRef} className="text-emerald-400 text-xs tracking-[0.4em] uppercase font-bold mb-6">FEATURED VIDEO</p>
-          <h1 ref={tHeadlineRef} className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter mix-blend-difference z-30">SSA / VIDEO</h1>
-          <h2 ref={tSublineRef} className="text-2xl md:text-4xl font-bold text-white/50 uppercase tracking-widest mt-2">The Signal</h2>
-        </div>
-        <div className="absolute bottom-10 left-1/2 z-40 flex -translate-x-1/2 flex-col items-center gap-3 text-[0.6rem] font-bold uppercase tracking-[0.35em] text-white/40">
-          <span>Scroll to explore</span>
-          <span className="h-10 w-px animate-pulse bg-gradient-to-b from-emerald-300/80 to-transparent" />
-        </div>
+        {/* Dynamic Editorial Typography Layer */}
+        <SSAVideoMetadata
+          headlineRef={headlineRef}
+          sublineRef={sublineRef}
+          categoryRef={categoryRef}
+          descRef={descRef}
+          activeVideoNumberRef={activeVideoNumberRef}
+        />
 
-        {/* Cinematic Constellation & Media Objects */}
+        {/* 3D Constellation of Spatial Video Objects */}
         <SSAVideoConstellation>
           {ssaVideoData.map((video, idx) => {
-            let baseClass = "w-[280px] md:w-[500px] aspect-video left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2";
+            const baseClass = "w-[280px] sm:w-[360px] md:w-[540px] aspect-video left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2";
             return (
               <SSAVideoObject
                 key={video.id}
@@ -151,11 +132,20 @@ export const SSAVideoExperience: React.FC = () => {
             );
           })}
         </SSAVideoConstellation>
-
-        {activeVideo && (
-          <SSACinematicPlayer video={activeVideo} onClose={() => setActiveVideo(null)} />
-        )}
       </SSAVideoStage>
+
+      {/* 42 — Final Editorial Media Archive (Post-Scroll Catalog) */}
+      <div className="relative w-full bg-[#020202] border-t border-white/10 z-20">
+        <SSAVideoArchive onSelectVideo={(video) => setActiveVideo(video)} />
+      </div>
+
+      {/* Single Active Immersive YouTube Player */}
+      {activeVideo && (
+        <SSACinematicPlayer 
+          video={activeVideo} 
+          onClose={() => setActiveVideo(null)} 
+        />
+      )}
     </section>
   );
 };
